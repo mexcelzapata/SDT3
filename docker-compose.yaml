@@ -1,0 +1,68 @@
+version: "3.7"
+services:
+  database_master:
+    image: bitnami/postgresql:14.1.0
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - 'postgresql_master_data:/bitnami/postgresql'
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_USERNAME=$POSTGRESQL_USERNAME
+      - POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD
+      - POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE
+      - POSTGRESQL_REPLICATION_USER=$POSTGRESQL_REPLICATION_USER
+      - POSTGRESQL_REPLICATION_PASSWORD=$POSTGRESQL_REPLICATION_PASSWORD
+    ports:
+      - $DB_PORT:5432
+  database_slave:
+    image: bitnami/postgresql:14.1.0
+    restart: always
+    depends_on:
+      - database_master
+    env_file:
+      - .env
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave 
+      - POSTGRESQL_REPLICATION_USER=$POSTGRESQL_REPLICATION_USER
+      - POSTGRESQL_REPLICATION_PASSWORD=$POSTGRESQL_REPLICATION_PASSWORD
+      - POSTGRESQL_MASTER_HOST=database_master
+      - POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+    ports:
+      - $DB_PORT:5432
+  api:
+    build: ./api
+    restart: always
+    depends_on:
+      - database_master
+      - database_slave
+    env_file:
+      - .env
+    environment:
+      - POSTGRESQL_USERNAME=$POSTGRESQL_USERNAME
+      - POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD
+      - POSTGRESQL_DATABASE=$POSTGRESQL_DATABASE
+      - POSTGRESQL_REPLICATION_USER=$POSTGRESQL_REPLICATION_USER
+      - POSTGRESQL_REPLICATION_PASSWORD=$POSTGRESQL_REPLICATION_PASSWORD
+      - POSTGRESQL_MASTER_HOST=database_master
+      - POSTGRESQL_SLAVE_HOST=database_slave
+    deploy:
+      replicas: 5
+    ports:
+      - $API_PORT:$API_PORT
+  load_balancer:
+    image: nginx:1.20.2-alpine
+    restart: always
+    depends_on:
+      - database_master
+      - database_slave
+      - api
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    environment:
+      - API_PORT=$API_PORT
+      - API_HOST=api
+    ports:
+      - $LOAD_BALANCER_PORT:80
