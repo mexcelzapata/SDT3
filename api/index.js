@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const port = process.env.API_PORT;
+const port = 8080;
 
 const write = require("./master_db.js");
 const read = require("./slave_db.js");

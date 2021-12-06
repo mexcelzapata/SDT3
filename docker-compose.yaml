@@ -53,11 +53,10 @@ services:
       - POSTGRESQL_SLAVE_HOST=database_slave
       - POSTGRESQL_MASTER_PORT_NUMBER=5432
       - POSTGRESQL_SLAVE_PORT_NUMBER=5432
-      - API_PORT=$API_PORT
     deploy:
       replicas: $API_REPLICAS
     ports:
-      - $API_PORT
+      - 8080
   load_balancer:
     image: nginx:1.20.2-alpine
     restart: always
