@@ -25,21 +25,26 @@ Los integrantes son:
 Antes de ejecutar cabe destacar revisar las configuraciones de las variables de entorno antes de ejecutar para no generar conflictos, por default tenemos la siguiente configuración en el archivo .env
 
 ```.env
-POSTGRESQL_USERNAME=postgres
-POSTGRESQL_PASSWORD=postgres
-POSTGRESQL_DATABASE=postgres
-POSTGRESQL_REPLICATION_USER=postgres
-POSTGRESQL_REPLICATION_PASSWORD=postgres
-DB_PORT=5432
-API_PORT=3000
-LOAD_BALANCER_PORT=80
+POSTGRESQL_USERNAME=postgres # USUARIO DB MASTER
+POSTGRESQL_PASSWORD=postgres # PASSWORD DB MASTER
+POSTGRESQL_DATABASE=postgres # NOMBRE DB MASTER
+POSTGRESQL_REPLICATION_USER=postgres # USUARIO DB SLAVE
+POSTGRESQL_REPLICATION_PASSWORD=postgres # PASSWORD DB SLAVE
+API_PORT=3000 # PUERTO USADO POR LA API
+LOAD_BALANCER_PORT=80 # PUERTO USADO POR NGINX
+DB_REPLICAS=3  # CANTIDAD DE REPLICAS SLAVE
+API_REPLICAS=5 # CANTIDAD DE REPLICAS API
 ```
+
+Con esto definimos la configuración de los puertos, replicas y credenciales para la base de datos, cabe destacar que existe un archivo script.sql el cual define y crea la tabla utilizada en la base de datos, este se genera solo, pues se encuentra configurado en el docker-compose, además, gracias a las estas variables de entorno no es necesario configurar con algún comando especial, solo debemos ejecutar :).
 
 Luego ejecutamos con
 
 ```sh
-    docker-compose up -d --build # Se recomienda quitar el tag -d para ver los logs y el --build si no se desea rebuilder.
+    docker-compose up -d --build # Se recomienda quitar el tag -d para ver los logs y asi ver las interacciones entre las distintas réplicas y él --build si no se desea rebuilder.
 ```
+
+IMPORTANTE: Al iniciar se debe esperar unos segundos o minutos a que se termine de levantar e iniciar los contenedores y las apps, se recomierda ir viendo los logs.
 
 ## Rutas
 
