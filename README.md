@@ -57,7 +57,19 @@ Ejemplo:
 }
 ```
 
-Devuelve estado 200 y data agregada de estar correcto.
+Devuelve estado 200 y json.
+
+```json
+{
+  "status": "success",
+  "message": "Product added successfully",
+  "data": {
+    "name": "tusisabes",
+    "stock": 33,
+    "price": 420
+  }
+}
+```
 
 ### /get_products
 
@@ -69,17 +81,27 @@ Ejemplo:
 
 ```json
 {
-  "products": [
-      {
-          "name": "tusisabes",
-          "stock": 33,
-          "price": 420
-      },
-      {
-          "name": "su buen tusisabes v2",
-          "stock": 69,
-          "price": 666
-      }
+  "status": "success",
+  "message": "Products found",
+  "data": [
+    {
+      "id": 1,
+      "name": "tusisabes",
+      "price": 420,
+      "stock": 33
+    },
+    {
+      "id": 2,
+      "name": "tusisabes",
+      "price": 420,
+      "stock": 33
+    },
+    {
+      "id": 7,
+      "name": "xd tusisabes v2",
+      "price": 420,
+      "stock": 33
+    }
   ]
 }
 ```
